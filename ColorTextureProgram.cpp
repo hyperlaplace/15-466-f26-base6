@@ -10,14 +10,14 @@ ColorTextureProgram::ColorTextureProgram() {
 	program = gl_compile_program(
 		//vertex shader:
 		"#version 330\n"
-		"uniform mat4 OBJECT_TO_CLIP;\n"
+		"uniform mat4 CLIP_FROM_OBJECT;\n"
 		"in vec4 Position;\n"
 		"in vec4 Color;\n"
 		"in vec2 TexCoord;\n"
 		"out vec4 color;\n"
 		"out vec2 texCoord;\n"
 		"void main() {\n"
-		"	gl_Position = OBJECT_TO_CLIP * Position;\n"
+		"	gl_Position = CLIP_FROM_OBJECT * Position;\n"
 		"	color = Color;\n"
 		"	texCoord = TexCoord;\n"
 		"}\n"
@@ -41,7 +41,7 @@ ColorTextureProgram::ColorTextureProgram() {
 	TexCoord_vec2 = glGetAttribLocation(program, "TexCoord");
 
 	//look up the locations of uniforms:
-	OBJECT_TO_CLIP_mat4 = glGetUniformLocation(program, "OBJECT_TO_CLIP");
+	CLIP_FROM_OBJECT_mat4 = glGetUniformLocation(program, "CLIP_FROM_OBJECT");
 	GLuint TEX_sampler2D = glGetUniformLocation(program, "TEX");
 
 	//set TEX to always refer to texture binding zero:

@@ -1,11 +1,14 @@
-#include "Mode.hpp"
+#pragma once
 
+#include "Mode.hpp"
 #include "Scene.hpp"
+#include "World.hpp"
 
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
+#include <array>
 #include <vector>
-#include <deque>
 
 struct PlayMode : Mode {
 	PlayMode();
@@ -20,23 +23,26 @@ struct PlayMode : Mode {
 
 	//input tracking:
 	struct Button {
-		uint8_t downs = 0;
-		uint8_t pressed = 0;
-	} left, right, down, up;
+		bool pressed = false;
+	} throttle, brake, left, right;
 
-	//local copy of the game scene (so code can change it during gameplay):
+	//the simulation (advances in fixed steps; see World.hpp):
+	World world;
+	float accumulator = 0.0f;
+
+	//the circuit and balls, modelled in Blender (scenes/make-silverstone.py):
 	Scene scene;
-
-	//hexapod leg to wobble:
-	Scene::Transform *hip = nullptr;
-	Scene::Transform *upper_leg = nullptr;
-	Scene::Transform *lower_leg = nullptr;
-	glm::quat hip_base_rotation;
-	glm::quat upper_leg_base_rotation;
-	glm::quat lower_leg_base_rotation;
-	float wobble = 0.0f;
-	
-	//camera:
 	Scene::Camera *camera = nullptr;
+	std::array< Scene::Transform *, World::NumRacers > ball_xf{};
+	std::array< glm::quat, World::NumRacers > ball_rot;
+	Scene::Transform *marker_xf = nullptr;
 
+	//camera follow state (rendering only; never feeds back into the simulation):
+	float cam_yaw = 0.0f;
+	glm::vec3 cam_focus = glm::vec3(0.0f);
+
+	//wall-clock time for animations that don't matter to gameplay:
+	float anim_time = 0.0f;
+
+	void restart();
 };
